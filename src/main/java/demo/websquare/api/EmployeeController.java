@@ -29,13 +29,13 @@ public class EmployeeController {
     @PostMapping("/search")
     public ResponseDto searchEmployee(@RequestBody SearchRequest searchRequest) {
         Pagination response = employeeService.searchEmployees(searchRequest.getParams());
-
         return responseFactory.response(response);
     }
 
     @PostMapping()
-    public Employee addOrUpdate(@Valid @RequestBody EmployeeRequest employee) throws ParseException {
-        return employeeService.createOrUpdate(employee);
+    public ResponseDto addOrUpdate(@Valid @RequestBody EmployeeRequest employee) throws ParseException {
+        ResponseDto res = responseFactory.response(employeeService.createOrUpdate(employee));
+        return res;
     }
 
     @DeleteMapping()

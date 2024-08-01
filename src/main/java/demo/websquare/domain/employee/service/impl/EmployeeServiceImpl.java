@@ -1,5 +1,7 @@
 package demo.websquare.domain.employee.service.impl;
 
+import demo.websquare.app.constant.ResponseCode;
+import demo.websquare.app.dto.exception.BusinessException;
 import demo.websquare.domain.employee.converter.EmployeeConverter;
 import demo.websquare.domain.employee.dto.Pagination;
 import demo.websquare.domain.employee.dto.request.EmployeeRequest;
@@ -11,6 +13,7 @@ import demo.websquare.infrastructure.util.DataUtils;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -46,14 +49,24 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     @Transactional
-    public Employee createOrUpdate(EmployeeRequest createRequest) throws ParseException {
-        Employee employee = getEmployeeFromCreateRequest(createRequest);
+    public Employee createOrUpdate(EmployeeRequest employeeRequest) {
+        Employee employee = new Employee();
 
         try {
-            return employeeRepository.save(employee);
+            if (employeeRequest.getId() != null) {
+                employee = employeeRepository.findById(employeeRequest.getId()).get();
+            } else {
+                employee.setCreatedDate(new Date());
+            }
+
+            BeanUtils.copyProperties(employeeRequest, employee);
+            employee.setBirthDate(employeeRequest.getBirthDate() == null ? employee.getBirthDate() : DataUtils.convertStringToDate(employeeRequest.getBirthDate()));
+            employeeRepository.save(employee);
+
+            return employee;
         } catch (Exception e) {
             logger.error("Failed to save employee: {}", employee, e);
-            throw new RuntimeException("Failed to save employee", e);
+            throw new BusinessException(ResponseCode.CREATE_OR_UPDATE_EMPLOYEE_ERROR);
         }
     }
 
@@ -77,7 +90,9 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 .pageIndex(page.getNumber())
                 .pageSize(page.getSize())
                 .build();
-    };
+    }
+
+    ;
 
     public List<Employee> exportDataToExcel(ParamSearchRequest searchRequest) {
         List<Employee> listEmployee = employeeRepository.downloadsExcel(
@@ -90,32 +105,4 @@ public class EmployeeServiceImpl implements IEmployeeService {
         );
         return listEmployee;
     }
-
-    private Employee getEmployeeFromCreateRequest(EmployeeRequest createRequest) throws ParseException {
-        Employee employee = new Employee();
-
-        updateEmployeeFromCreateRequest(employee, createRequest);
-
-        if (createRequest.getId() != null) {
-            employee = employeeRepository.findById(createRequest.getId()).orElseThrow(null);
-
-        } else {
-            employee.setCreatedDate(new Date());
-        }
-
-        return employee;
-    }
-
-    private void updateEmployeeFromCreateRequest(Employee employee, EmployeeRequest createRequest) throws ParseException {
-        employee.setName(createRequest.getName());
-        employee.setTeam(createRequest.getTeam());
-        employee.setPhone( createRequest.getPhone());
-        employee.setGender(createRequest.getGender());
-        employee.setEmail(createRequest.getEmail());
-        employee.setAddress(createRequest.getAddress());
-        employee.setStatus( createRequest.getStatus());
-        employee.setBirthDate(createRequest.getBirthDate() == null ? employee.getBirthDate() : DataUtils.convertStringToDate(createRequest.getBirthDate()));
-    }
-
-
 }

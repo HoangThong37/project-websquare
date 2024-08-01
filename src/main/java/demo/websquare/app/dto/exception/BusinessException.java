@@ -10,14 +10,17 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
+
 public class BusinessException extends RuntimeException {
 
-    protected ResponseCode responseCode;
-
-    private String param;
+    private ResponseCode responseCode;
 
     public BusinessException(ResponseCode responseCode) {
+        //super(responseCode.getMessage()); // Set the exception message
         this.responseCode = responseCode;
     }
+
+//    public ResponseCode getResponseCode() {
+//        return responseCode;
+//    }
 }

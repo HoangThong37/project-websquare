@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 @Repository
-public interface EmployeeRepository extends JpaRepository<demo.websquare.domain.employee.entity.Employee, String> {
+public interface EmployeeRepository extends JpaRepository<Employee, String> {
 
     @Query(value = "SELECT e FROM Employee e " +
             "WHERE (:name IS NULL OR :name = '' OR e.name LIKE %:name%) " +
@@ -32,7 +32,6 @@ public interface EmployeeRepository extends JpaRepository<demo.websquare.domain.
             @Param("birthDateTo") Date birthDateTo,
             Pageable pageable
     );
-
 
     @Query(value = """
         select * from employee e
