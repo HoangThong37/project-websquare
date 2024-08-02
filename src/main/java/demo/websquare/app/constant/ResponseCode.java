@@ -18,6 +18,7 @@ public enum ResponseCode {
     BAD_REQUEST("BAD_REQUEST", 400),
     INVALID_FIELD("INVALID_FIELD", 400),
     EMPLOYEE_NOT_FOUND("Employee not found", 404),
+    IDS_NOT_FOUND("Ids not found", 404),
     CREATE_EMPLOYEE_ERROR("Failed to create employee", 500),
     UPDATE_EMPLOYEE_ERROR("Failed to update employee", 500),
     DELETE_EMPLOYEE_ERROR("Failed to delete employee", 500),

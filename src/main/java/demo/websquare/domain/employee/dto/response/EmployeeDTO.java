@@ -1,4 +1,4 @@
-package demo.websquare.domain.employee.dto;
+package demo.websquare.domain.employee.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;

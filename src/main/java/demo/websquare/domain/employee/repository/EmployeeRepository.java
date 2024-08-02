@@ -15,7 +15,8 @@ import java.util.List;
 public interface EmployeeRepository extends JpaRepository<Employee, String> {
 
     @Query(value = "SELECT e FROM Employee e " +
-            "WHERE (:name IS NULL OR :name = '' OR e.name LIKE %:name%) " +
+            "WHERE true " +
+            "AND (:name IS NULL OR :name = '' OR e.name LIKE %:name%) " +
             "AND (:team IS NULL OR :team = '' OR e.team LIKE %:team%) " +
             "AND (:phone IS NULL OR :phone = '' OR e.phone LIKE %:phone%) " +
             "AND (:gender IS NULL OR :gender = '' OR e.gender LIKE %:gender%) " +
@@ -33,16 +34,14 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
             Pageable pageable
     );
 
-    @Query(value = """
-        select * from employee e
-        where 1 = 1
-        and (e.name like lower(:name) or :name is null)
-        and (e.team like lower(:team) or :team is null)
-        and (e.phone like lower(:phone) or :phone is null)
-        and (e.gender = lower(:gender) or :gender is null)
-        and (e.birth_date >= :fromDate or :fromDate is null)
-        and (e.birth_date <= :toDate or :toDate is null)
-    """, nativeQuery = true)
+    @Query(value = "SELECT e FROM Employee e " +
+            "WHERE true " +
+            "AND (:name IS NULL OR :name = '' OR  lower(e.name) LIKE %:name%) " +
+            "AND (:team IS NULL OR :team = '' OR  lower(e.team) LIKE %:team%) " +
+            "AND (:phone IS NULL OR :phone = '' OR  lower(e.phone) LIKE %:phone%) " +
+            "AND (:gender IS NULL OR :gender = '' OR   e.gender = lower(:gender)) " +
+            "AND (:fromDate IS NULL OR e.birthDate >= :fromDate) " +
+            "AND (:toDate IS NULL OR e.birthDate <= :toDate)")
     List<Employee> downloadsExcel(
             @Param("name") String name,
             @Param("team") String team,

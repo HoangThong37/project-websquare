@@ -1,6 +1,6 @@
 package demo.websquare.domain.employee.service;
 
-import demo.websquare.domain.employee.dto.Pagination;
+import demo.websquare.domain.employee.dto.response.Pagination;
 import demo.websquare.domain.employee.dto.request.EmployeeRequest;
 import demo.websquare.domain.employee.dto.request.ParamSearchRequest;
 import demo.websquare.domain.employee.entity.Employee;

@@ -9,19 +9,6 @@ import java.util.Date;
 
 public class DataUtils {
 
-    public static String appendPercent(String input) {
-        if (input == null || input.isEmpty()) {
-            return null;
-        }
-        return "%" + input.trim().toLowerCase() + "%";
-    }
-
-    public  static String formatEmpty(String input) {
-        if(input == null || input.isEmpty()) return null;
-        return input;
-    }
-
-
     public static Date stringToDate(String date) {
         if (date == null || date.isEmpty()) {
             return null;
@@ -53,4 +40,17 @@ public class DataUtils {
 
         return outputFormatter.parse(outputFormatter.format(date));
     }
+
+//    public static String appendPercent(String input) {
+//        if (input == null || input.isEmpty()) {
+//            return null;
+//        }
+//        return "%" + input.trim().toLowerCase() + "%";
+//    }
+//
+//    public  static String formatEmpty(String input) {
+//        if(input == null || input.isEmpty()) return null;
+//        return input;
+//    }
+
 }

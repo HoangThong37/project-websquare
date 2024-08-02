@@ -3,7 +3,7 @@ package demo.websquare.domain.employee.service.impl;
 import demo.websquare.app.constant.ResponseCode;
 import demo.websquare.app.dto.exception.BusinessException;
 import demo.websquare.domain.employee.converter.EmployeeConverter;
-import demo.websquare.domain.employee.dto.Pagination;
+import demo.websquare.domain.employee.dto.response.Pagination;
 import demo.websquare.domain.employee.dto.request.EmployeeRequest;
 import demo.websquare.domain.employee.dto.request.ParamSearchRequest;
 import demo.websquare.domain.employee.entity.Employee;
@@ -19,7 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -34,17 +33,14 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Transactional
     public void delete(List<String> ids) {
         if (ids == null || ids.isEmpty()) {
-            logger.warn("Attempt to delete with null or empty ids");
-            return;
+            throw new BusinessException(ResponseCode.IDS_NOT_FOUND);
         }
 
         List<Employee> employees = employeeRepository.findAllById(ids);
         try {
             employeeRepository.deleteAll(employees);
-            logger.info("Successfully deleted employees with ids: {}", ids);
         } catch (Exception e) {
-            logger.error("Failed to delete employees with ids: {}", ids, e);
-            throw new RuntimeException("Failed to delete employees", e);
+            throw new BusinessException(ResponseCode.DELETE_EMPLOYEE_ERROR);
         }
     }
 
@@ -65,7 +61,6 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
             return employee;
         } catch (Exception e) {
-            logger.error("Failed to save employee: {}", employee, e);
             throw new BusinessException(ResponseCode.CREATE_OR_UPDATE_EMPLOYEE_ERROR);
         }
     }
@@ -92,17 +87,17 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 .build();
     }
 
-    ;
 
     public List<Employee> exportDataToExcel(ParamSearchRequest searchRequest) {
         List<Employee> listEmployee = employeeRepository.downloadsExcel(
-                DataUtils.appendPercent(searchRequest.getName()),
-                DataUtils.appendPercent(searchRequest.getTeam()),
-                DataUtils.appendPercent(searchRequest.getPhone()),
-                DataUtils.formatEmpty(searchRequest.getGender()),
+                searchRequest.getName(),
+                searchRequest.getTeam(),
+                searchRequest.getPhone(),
+                searchRequest.getGender(),
                 DataUtils.stringToDate(searchRequest.getDateFrom()),
                 DataUtils.stringToDate(searchRequest.getDateTo())
         );
+
         return listEmployee;
     }
 }

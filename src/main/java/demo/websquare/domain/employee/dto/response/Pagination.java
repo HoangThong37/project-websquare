@@ -1,4 +1,4 @@
-package demo.websquare.domain.employee.dto;
+package demo.websquare.domain.employee.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;

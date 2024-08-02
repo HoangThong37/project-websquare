@@ -1,6 +1,6 @@
 package demo.websquare.domain.employee.converter;
 
-import demo.websquare.domain.employee.dto.EmployeeDTO;
+import demo.websquare.domain.employee.dto.response.EmployeeDTO;
 import demo.websquare.domain.employee.entity.Employee;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
