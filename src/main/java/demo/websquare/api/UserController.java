@@ -1,14 +1,17 @@
 package demo.websquare.api;
 
 
+import demo.websquare.domain.user.dto.UserDTO;
 import demo.websquare.domain.user.entity.User;
 import demo.websquare.domain.user.exception.ResourceNotFoundException;
 import demo.websquare.domain.user.repository.UserRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -60,25 +63,37 @@ public class UserController {
     // api create
     // API create new user
     @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody User userRequest) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userRequest) {
         // Kiểm tra email đã tồn tại chưa
         Optional<User> existingUser = userRepository.findByEmail(userRequest.getEmail());
         if (existingUser.isPresent()) {
-            //return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already in use.");
-            throw new ResourceNotFoundException("Email already in use.");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already in use.");
+            //throw new ResourceNotFoundException("Email already in use.");
+        }
+
+        if (userRequest.getName().isEmpty() || userRequest.getName() == null) {
+            throw new ResourceNotFoundException("Name is not null");
+        }
+
+        if (userRequest.getEmail().isEmpty() || userRequest.getEmail() == null) {
+            throw new ResourceNotFoundException("Email is not null");
         }
 
         if (userRequest.getName().length() > 30) {
-            //return ResponseEntity.badRequest().body("Name cannot exceed 30 characters.");
-            throw new ResourceNotFoundException("Name cannot exceed 30 characters.");
+            return ResponseEntity.badRequest().body("Name cannot exceed 30 characters.");
+            //throw new ResourceNotFoundException("Name cannot exceed 30 characters.");
         }
         if (userRequest.getAge() < 18) {
-            //return ResponseEntity.badRequest().body("Age must be at least 18.");
-            throw new ResourceNotFoundException("Age must be at least 18.");
+            return ResponseEntity.badRequest().body("Age must be at least 18.");
+            //throw new ResourceNotFoundException("Age must be at least 18.");
         }
 
-        userRequest.setCreatedAt(LocalDateTime.now());
-        userRepository.save(userRequest);
+        User user = new User();
+        user.setName(userRequest.getName());
+        user.setEmail(userRequest.getEmail());
+        user.setAge(userRequest.getAge());
+        user.setCreatedAt(LocalDateTime.now());
+        userRepository.save(user);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(userRequest);
     }
